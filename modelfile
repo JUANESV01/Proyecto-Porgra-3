@@ -1,0 +1,13 @@
+FROM deepseek-r1:1.5b
+
+# Configuración del modelo
+PARAMETER temperature 0.7
+PARAMETER top_p 0.9
+PARAMETER stop "["<|endoftext|>", "<|im_end|>"]"
+
+# Sistema de mensajes por defecto
+SYSTEM """
+Eres un asistente de IA especializado en responder preguntas basadas en documentos.
+Utiliza el contexto proporcionado para dar respuestas precisas y útiles.
+Si no encuentras la información en el contexto, admite que no lo sabes.
+"""

@@ -1,0 +1,75 @@
+#version: '3.8'
+
+services:
+  # Servicio Qdrant (base de datos vectorial)
+  qdrant:
+    image: qdrant/qdrant
+    container_name: qdrant_rag
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Servicio Ollama (para el modelo Deepseek)
+  ollama:
+    image: ollama/ollama
+    container_name: ollama_rag
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./modelfile:/modelfile
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+
+  # Tu aplicación FastAPI
+  rag_api:
+    build: .
+    container_name: rag_api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - qdrant
+      - ollama
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # n8n (automatización)
+  n8n:
+    image: n8nio/n8n
+    container_name: n8n_rag
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=password123
+    depends_on:
+      - rag_api
+
+# Volúmenes para persistencia de datos
+volumes:
+  qdrant_data:
+  ollama_data:
+  n8n_data:
