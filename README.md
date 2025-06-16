@@ -1,2 +1,2 @@
-# Proyecto-Porgra-3
+# RAG con agente de IA en Python con n8n
 Este proyecto es un sistema de consulta y análisis de documentos PDF basado en técnicas de recuperación de información (RAG). Permite extraer el contenido relevante de archivos PDF y responder preguntas sobre su contenido utilizando modelos de lenguaje local. Está diseñado para ejecutarse principalmente en CPU, pero puede aprovechar GPU para acelerar el procesamiento si está disponible. El sistema integra procesamiento de texto, generación de embeddings, y consultas con modelos de inteligencia artificial locales, facilitando un análisis eficiente y accesible de documentos académicos o técnicos.
